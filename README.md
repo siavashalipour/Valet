@@ -79,7 +79,7 @@ NSString *const username = @"Skroob";
 NSString *const myLuggageCombination = [myValet stringForKey:username];
 ```
 
-In addition to allowing the storage of strings, Valet allows for storing of `Data` objects via `set(object: Data, for key: Key)` and `-objectForKey:`. Valets created with a different class type, via a different initializer, or with a different flavor or accessibility attribute will not be able to read or modify values in `myValet`.
+In addition to allowing the storage of strings, Valet allows the storage of `Data` objects via `set(object: Data, for key: Key)` and `-objectForKey:`. Valets created with a different class type, via a different initializer, or with a different flavor or accessibility attribute will not be able to read or modify values in `myValet`.
 
 ### Sharing Secrets Among Multiple Applications
 
