@@ -79,9 +79,9 @@ public final class SecureEnclave {
         let noPromptValet: Valet
         switch service {
         case .standard:
-            noPromptValet = .valet(with: identifier, flavor: .vanilla(.whenPasscodeSetThisDeviceOnly))
+            noPromptValet = .valet(with: identifier, accessibility: .whenPasscodeSetThisDeviceOnly)
         case .sharedAccessGroup:
-            noPromptValet = .sharedAccessGroupValet(with: identifier, flavor: .vanilla(.whenPasscodeSetThisDeviceOnly))
+            noPromptValet = .sharedAccessGroupValet(with: identifier, accessibility: .whenPasscodeSetThisDeviceOnly)
         }
         
         return noPromptValet.canAccessKeychain()

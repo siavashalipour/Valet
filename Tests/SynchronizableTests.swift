@@ -23,12 +23,28 @@ import Foundation
 import XCTest
 
 
+extension Valet {
+
+    // MARK: Accessibility -> CloudAccessibility conversion
+
+    var cloudAccessibility: CloudAccessibility {
+        switch flavor {
+        case .iCloud(let cloudAccessibility):
+            return cloudAccessibility
+        case .vanilla:
+            assert(false)
+            return .always
+        }
+    }
+}
+
+
 @available (iOS 8.2, OSX 10.11, *)
-class SynchronizableTests: XCTestCase
+class CloudTests: XCTestCase
 {
     static let identifier = Identifier(nonEmpty: "valet_testing")!
     static let accessibility = CloudAccessibility.whenUnlocked
-    let valet = Valet.valet(with: identifier, flavor: .iCloud(accessibility))
+    let valet = Valet.iCloudValet(with: identifier, accessibility: accessibility)
     let key = "key"
     let passcode = "topsecret"
     
@@ -41,7 +57,7 @@ class SynchronizableTests: XCTestCase
         }
         
         valet.removeAllObjects()
-        let identifier = SynchronizableTests.identifier
+        let identifier = CloudTests.identifier
         let allPermutations = Valet.iCloudPermutations(with: identifier) + Valet.iCloudPermutations(with: identifier, shared: true)
         allPermutations.forEach { testValet, _ in testValet.removeAllObjects() }
     }
@@ -52,7 +68,7 @@ class SynchronizableTests: XCTestCase
             return
         }
         
-        let localValet = Valet.valet(with: valet.identifier, flavor: .vanilla(valet.accessibility))
+        let localValet = Valet.valet(with: valet.identifier, accessibility: valet.accessibility)
         XCTAssertFalse(valet == localValet)
         XCTAssertFalse(valet === localValet)
         
@@ -68,7 +84,7 @@ class SynchronizableTests: XCTestCase
     }
     
     func test_synchronizableValets_withEquivalentConfigurationsAreEqual() {
-        let otherValet = Valet.valet(with: valet.identifier, flavor: valet.flavor)
+        let otherValet = Valet.iCloudValet(with: valet.identifier, accessibility: valet.cloudAccessibility)
         XCTAssert(valet == otherValet)
         XCTAssert(valet === otherValet)
     }
