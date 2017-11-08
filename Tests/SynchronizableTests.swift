@@ -23,22 +23,6 @@ import Foundation
 import XCTest
 
 
-extension Valet {
-
-    // MARK: Accessibility -> CloudAccessibility conversion
-
-    var cloudAccessibility: CloudAccessibility {
-        switch flavor {
-        case .iCloud(let cloudAccessibility):
-            return cloudAccessibility
-        case .vanilla:
-            assert(false)
-            return .always
-        }
-    }
-}
-
-
 @available (iOS 8.2, OSX 10.11, *)
 class CloudTests: XCTestCase
 {
@@ -84,7 +68,11 @@ class CloudTests: XCTestCase
     }
     
     func test_synchronizableValets_withEquivalentConfigurationsAreEqual() {
-        let otherValet = Valet.iCloudValet(with: valet.identifier, accessibility: valet.cloudAccessibility)
+        guard case let .iCloud(accessibility) = valet.configuration else {
+            XCTFail()
+            return
+        }
+        let otherValet = Valet.iCloudValet(with: valet.identifier, accessibility: accessibility)
         XCTAssert(valet == otherValet)
         XCTAssert(valet === otherValet)
     }

@@ -64,8 +64,8 @@ internal extension Valet {
     }
 
     var legacyValet: VALLegacyValet {
-        switch flavor {
-        case .vanilla:
+        switch configuration {
+        case .valet:
             switch service {
             case .standard:
                 return VALLegacyValet(identifier: legacyIdentifier, accessibility: legacyAccessibility)!
@@ -79,6 +79,9 @@ internal extension Valet {
             case .sharedAccessGroup:
                 return VALSynchronizableValet(sharedAccessGroupIdentifier: legacyIdentifier, accessibility: legacyAccessibility)!
             }
+
+        default:
+            fatalError()
         }
     }
 

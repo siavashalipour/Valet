@@ -24,74 +24,35 @@ import Foundation
 /// Reads and writes keychain elements.
 @objc(VALValet)
 public final class Valet: NSObject, KeychainQueryConvertible {
-    
-    // MARK: Flavor
-    
-    public enum Flavor: CustomStringConvertible, Equatable {
-        /// Reads and writes keychain elements that do not sync to other devices.
-        case vanilla(Accessibility)
-        /// Reads and writes keychain elements that are synchronized with iCloud.
-        case iCloud(CloudAccessibility)
 
-        // MARK: CustomStringConvertible
-
-        public var description: String {
-            switch self {
-            case let .vanilla(accessibility):
-                return "\(accessibility) (Vanilla)"
-            case let .iCloud(cloudAccessibility):
-                return "\(cloudAccessibility.accessibility) (iCloud)"
-            }
-        }
-        
-        // MARK: Equatable
-        
-        public static func ==(lhs: Flavor, rhs: Flavor) -> Bool {
-            switch lhs {
-            case let .vanilla(lhsAccessibility):
-                if case let .vanilla(rhsAccessibility) = rhs, lhsAccessibility == rhsAccessibility {
-                    return true
-                } else {
-                    return false
-                }
-            case let .iCloud(lhsAccessibility):
-                if case let .iCloud(rhsAccessibility) = rhs, lhsAccessibility == rhsAccessibility {
-                    return true
-                } else {
-                    return false
-                }
-            }
-        }
-    }
-    
     // MARK: Public Class Methods
     
     /// - parameter identifier: A non-empty string that uniquely identifies a Valet.
     /// - parameter accessibility: The desired accessibility for the Valet.
     /// - returns: A Valet that reads/writes keychain elements with the desired accessibility and identifier.
     public class func valet(with identifier: Identifier, accessibility: Accessibility) -> Valet {
-        return findOrCreate(identifier, flavor: Flavor.vanilla(accessibility))
+        return findOrCreate(identifier, configuration: .valet(accessibility))
     }
 
     /// - parameter identifier: A non-empty string that uniquely identifies a Valet.
     /// - parameter accessibility: The desired accessibility for the Valet.
     /// - returns: A Valet (synchronized with iCloud) that reads/writes keychain elements with the desired accessibility and identifier.
     public class func iCloudValet(with identifier: Identifier, accessibility: CloudAccessibility) -> Valet {
-        return findOrCreate(identifier, flavor: Flavor.iCloud(accessibility))
+        return findOrCreate(identifier, configuration: .iCloud(accessibility))
     }
 
     /// - parameter identifier: A non-empty string that must correspond with the value for keychain-access-groups in your Entitlements file.
     /// - parameter accessibility: The desired accessibility for the Valet.
     /// - returns: A Valet that reads/writes keychain elements that can be shared across applications written by the same development team.
     public class func sharedAccessGroupValet(with identifier: Identifier, accessibility: Accessibility) -> Valet {
-        return findOrCreate(identifier, flavor: Flavor.vanilla(accessibility), sharedAccessGroup: true)
+        return findOrCreate(identifier, configuration: .valet(accessibility), sharedAccessGroup: true)
     }
 
     /// - parameter identifier: A non-empty string that must correspond with the value for keychain-access-groups in your Entitlements file.
     /// - parameter accessibility: The desired accessibility for the Valet.
     /// - returns: A Valet (synchronized with iCloud) that reads/writes keychain elements that can be shared across applications written by the same development team.
     public class func iCloudSharedAccessGroupValet(with identifier: Identifier, accessibility: CloudAccessibility) -> Valet {
-        return findOrCreate(identifier, flavor: Flavor.iCloud(accessibility), sharedAccessGroup: true)
+        return findOrCreate(identifier, configuration: .iCloud(accessibility), sharedAccessGroup: true)
     }
     
     // MARK: Equatable
@@ -108,14 +69,14 @@ public final class Valet: NSObject, KeychainQueryConvertible {
     // MARK: Private Class Functions
 
     /// - returns: a Valet with the given Identifier, Flavor (and a shared access group service if requested)
-    private class func findOrCreate(_ identifier: Identifier, flavor: Flavor, sharedAccessGroup: Bool=false) -> Valet {
-        let service : Service = sharedAccessGroup ? .sharedAccessGroup(identifier, .valet(flavor)) : .standard(identifier, .valet(flavor))
+    private class func findOrCreate(_ identifier: Identifier, configuration: Configuration, sharedAccessGroup: Bool=false) -> Valet {
+        let service : Service = sharedAccessGroup ? .sharedAccessGroup(identifier, configuration) : .standard(identifier, configuration)
         let key = service.description as NSString
         if let existingValet = identifierToValetMap.object(forKey: key) {
             return existingValet
 
         } else {
-            let valet = Valet(identifier: identifier, flavor: flavor)
+            let valet = Valet(identifier: identifier, configuration: configuration)
             identifierToValetMap.setObject(valet, forKey: key)
             return valet
         }
@@ -128,45 +89,26 @@ public final class Valet: NSObject, KeychainQueryConvertible {
         fatalError("Do not use this initializer")
     }
     
-    private init(identifier: Identifier, flavor: Flavor) {
+    private init(identifier: Identifier, configuration: Configuration) {
         self.identifier = identifier
-        
-        switch flavor {
-        case let .vanilla(accessibility):
-            service = .standard(identifier, .valet(flavor))
-            self.accessibility = accessibility
-            self.flavor = flavor
-        case let .iCloud(synchronizableAccessibility):
-            service = .standard(identifier, .valet(flavor))
-            accessibility = synchronizableAccessibility.accessibility
-            self.flavor = flavor
-        }
-        
+        self.configuration = configuration
+        service = .standard(identifier, configuration)
+        accessibility = configuration.accessibility
         keychainQuery = service.generateBaseQuery()
     }
     
-    private init(sharedAccess identifier: Identifier, flavor: Flavor) {
+    private init(sharedAccess identifier: Identifier, configuration: Configuration) {
         self.identifier = identifier
-        
-        switch flavor {
-        case let .vanilla(accessibility):
-            service = .sharedAccessGroup(identifier, .valet(flavor))
-            self.accessibility = accessibility
-            self.flavor = flavor
-            
-        case let .iCloud(synchronizableAccessibility):
-            service = .sharedAccessGroup(identifier, .valet(flavor))
-            accessibility = synchronizableAccessibility.accessibility
-            self.flavor = flavor
-        }
-        
+        self.configuration = configuration
+        service = .sharedAccessGroup(identifier, configuration)
+        accessibility = configuration.accessibility
         keychainQuery = service.generateBaseQuery()
     }
 
     // MARK: CustomStringConvertible
 
     public override var description: String {
-        return "\(super.description) \(identifier.description) \(flavor.description)"
+        return "\(super.description) \(identifier.description) \(configuration.prettyDescription)"
     }
     
     // MARK: KeychainQueryConvertible
@@ -183,7 +125,6 @@ public final class Valet: NSObject, KeychainQueryConvertible {
     
     @objc
     public let accessibility: Accessibility
-    public let flavor: Flavor
     public let identifier: Identifier
 
     // MARK: Public Methods
@@ -345,10 +286,11 @@ public final class Valet: NSObject, KeychainQueryConvertible {
 
     // MARK: Internal Properties
 
+    internal let configuration: Configuration
     internal let service: Service
 
     // MARK: Private Properties
-    
+
     private let lock = NSLock()
 }
 
