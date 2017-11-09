@@ -29,7 +29,7 @@ internal enum Configuration: CustomStringConvertible {
 
     // MARK: Public Properties
 
-    public var prettyDescription: String {
+    internal var prettyDescription: String {
         let configurationDescription: String = {
             switch self {
             case .valet:
