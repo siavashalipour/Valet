@@ -11,4 +11,12 @@ Pod::Spec.new do |s|
   s.frameworks = 'Security'
   s.ios.deployment_target = '9.0'
   s.osx.deployment_target = '10.11'
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*.{swift,h,m}'
+    test_spec.requires_app_host = true
+    test_spec.pod_target_xcconfig = {
+      'SWIFT_OBJC_BRIDGING_HEADER' => '${PODS_TARGET_SRCROOT}/Tests/ValetTests-Bridging-Header.h'
+    }
+  end
 end

@@ -23,7 +23,6 @@ import Foundation
 import XCTest
 
 
-@available (iOS 8.2, OSX 10.11, *)
 class CloudTests: XCTestCase
 {
     static let identifier = Identifier(nonEmpty: "valet_testing")!

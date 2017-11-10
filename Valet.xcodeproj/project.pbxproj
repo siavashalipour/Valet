@@ -288,6 +288,7 @@
 				16E04BE21F71B6D200E8552D /* ErrorHandler.swift */,
 				16E04BDF1F71B6D200E8552D /* Identifier.swift */,
 				16E04BE71F71B6D200E8552D /* KeychainQueryConvertible.swift */,
+				16E04BDA1F71B6AA00E8552D /* Internal */,
 				16E04BE91F71B6D300E8552D /* MigrationResult.swift */,
 				16E04BE01F71B6D200E8552D /* SecureEnclave.swift */,
 				16E04BE81F71B6D200E8552D /* SecureEnclaveAccessControl.swift */,
@@ -295,7 +296,6 @@
 				16E04BE31F71B6D200E8552D /* SecureEnclaveValet.swift */,
 				16EB523D1F71BC6B00363869 /* Valet.h */,
 				16E04BE61F71B6D200E8552D /* Valet.swift */,
-				16E04BDA1F71B6AA00E8552D /* Internal */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
