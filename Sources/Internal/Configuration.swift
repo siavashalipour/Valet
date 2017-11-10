@@ -27,24 +27,6 @@ internal enum Configuration: CustomStringConvertible {
     case secureEnclave(SecureEnclaveAccessControl)
     case singlePromptSecureEnclave(SecureEnclaveAccessControl)
 
-    // MARK: Public Properties
-
-    internal var prettyDescription: String {
-        let configurationDescription: String = {
-            switch self {
-            case .valet:
-                return "(Valet)"
-            case .iCloud:
-                return "(iCloud)"
-            case .secureEnclave:
-                return "(Secure Enclave)"
-            case .singlePromptSecureEnclave:
-                return "(Single Prompt)"
-            }
-        }()
-        return "\(accessibility) \(configurationDescription)"
-    }
-
     // MARK: CustomStringConvertible
     
     internal var description: String {
@@ -71,5 +53,21 @@ internal enum Configuration: CustomStringConvertible {
         case .secureEnclave, .singlePromptSecureEnclave:
             return Accessibility.whenPasscodeSetThisDeviceOnly
         }
+    }
+    
+    internal var prettyDescription: String {
+        let configurationDescription: String = {
+            switch self {
+            case .valet:
+                return "(Valet)"
+            case .iCloud:
+                return "(iCloud)"
+            case .secureEnclave:
+                return "(Secure Enclave)"
+            case .singlePromptSecureEnclave:
+                return "(Single Prompt)"
+            }
+        }()
+        return "\(accessibility) \(configurationDescription)"
     }
 }
