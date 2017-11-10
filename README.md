@@ -157,7 +157,7 @@ First the good news: you will _not_ have to migrate your keychain data when upgr
 Now the bad news: the Swift Valet API has slight differences from the Objective-C Valet API. You may have noticed a few of the differences in the sample code above, but here's a rundown of the changes that may affect you.
 
 1. Initializers have changed in both Swift and Objective-C - both languages use class methods now, which felt more semantically honest (a lot of the time you're not instantiating a new Valet, you're re-accessing one you've already created). [See example usage above](#Basic-Initialization).
-2. `VALSynchronizableValet` (which allowed keychains to be synced to iCloud) has been replaced by a `Valet.iCloudValet(with:accessibility:)`  (or `+iCloudValetWithIdentifier:Accessibility:` in Objective-C). [See examples above](#Sharing-Secrets-Across-Devices-with-iCloud).
+2. `VALSynchronizableValet` (which allowed keychains to be synced to iCloud) has been replaced by a `Valet.iCloudValet(with:accessibility:)`  (or `+iCloudValetWithIdentifier:accessibility:` in Objective-C). [See examples above](#Sharing-Secrets-Across-Devices-with-iCloud).
 3. `setObject(_:forKey:)` has become `set(object:forKey:)` in Swift. The Objective-C API `-setObject:forKey:` remains the same.
 4. `setString(_:forKey:)` has become `set(string:forKey:)` in Swift. The Objective-C API `-setString:forKey:` remains the same.
 5. `SecureEnclaveValet` and `SinglePromptSecureEnclaveValet` data retrieval methods now return a single enum [SecureEnclave.Result](Sources/SecureEnclave.swift#L28) rather than using an `inout` boolean to signal whether a user cancelled. The Objective-C API remains the same.
