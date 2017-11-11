@@ -1,3 +1,3 @@
 source 'https://rubygems.org' do
-  gem 'cocoapods', :git => 'https://github.com/CocoaPods/CocoaPods.git', :ref => '9046e78eec9c61c17da75c4473b32433cd823276'
+  gem 'cocoapods', :git => 'https://github.com/CocoaPods/CocoaPods.git', :ref => '71211b5046cb1c9f5ad33e45d42f16b43eabfb8f'
 end
