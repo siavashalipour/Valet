@@ -161,6 +161,16 @@ This instance also stores and retrieves data in the Secure Enclave, but does not
 
 **In order for your customers not to receive a prompt that your app does not yet support Face ID, you must set a value for the Privacy - Face ID Usage Description [(NSFaceIDUsageDescription)](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW75) key in your app’s Info.plist.**
 
+### Choosing a user-friendly identifier for your Valet on macOS
+
+Mac apps signed with a developer ID may see their Valet’s identifier [shown to their users](https://github.com/square/Valet/issues/140). It is possible to set a user-friendly identifier explicitly setting the identifier:
+
+```swift
+let mySecureEnclaveValet = Valet.valet(withExplicitlySet: Identifier(nonEmpty: "Druidia")!, accessibility: .whenUnlocked)
+```
+
+Note that when explicitly setting a Valet's identifier, you are allowing Valets of different types to potentially read and write the same key:value pairs. Explicitly set the identifier with caution.
+
 ### Migrating Existing Keychain Values into Valet
 
 Already using the Keychain and no longer want to maintain your own Keychain code? We feel you. That’s why we wrote `migrateObjects(matching query: [String : AnyHashable], removeOnCompletion: Bool)`. This method allows you to migrate all your existing Keychain entries to a Valet instance in one line. Just pass in a Dictionary with the `kSecClass`, `kSecAttrService`, and any other `kSecAttr*` attributes you use – we’ll migrate the data for you.
