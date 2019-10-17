@@ -33,7 +33,8 @@ public final class ErrorHandler {
         guard !condition else {
             return
         }
-        
+        let userInfo = ["file": "\(file)", "line": "\(line)", "message": message]
+        NotificationCenter.default.post(name: NSNotification.Name("notification_valet_error"), object: nil, userInfo: userInfo)
         Swift.assertionFailure(message, file: file, line: line)
     }
     
